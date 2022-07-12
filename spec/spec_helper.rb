@@ -13,7 +13,7 @@
 # it.
 #
 
-require 'webmock/rspec'
+# require 'webmock/rspec'
 require 'simplecov'
 SimpleCov.start 'rails'
 SimpleCov.add_filter %w[spec config]
