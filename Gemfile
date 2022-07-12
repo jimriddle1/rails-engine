@@ -34,6 +34,10 @@ group :development, :test do
   gem 'figaro'
   gem 'pry'
   gem 'shoulda-matchers'
+  gem 'factory_bot_rails'
+  gem 'faker'
+  gem 'rspec-rails'
+  gem 'simplecov'
 end
 
 group :development do
@@ -45,14 +49,13 @@ group :development do
   gem 'web-console', '>= 3.3.0'
 end
 
-group :test do
-  gem 'capybara'
-  gem 'launchy'
-  gem 'rspec-rails'
-  gem 'simplecov'
-  gem 'vcr'
-  gem 'webmock'
-end
+# group :test do
+#   gem 'capybara'
+#   gem 'launchy'
+#   gem 'simplecov'
+#   gem 'vcr'
+#   gem 'webmock'
+# end
 
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
