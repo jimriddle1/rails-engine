@@ -24,19 +24,17 @@ RSpec.describe 'Merchants API' do
       expect(merchant[:attributes][:name]).to be_an(String)
     end
   end
+
   it 'returns a single merchant' do
     id = create(:merchant).id
-    create_list(:merchant, 2)
+
     get "/api/v1/merchants/#{id}"
 
     expect(response).to be_successful
 
-
     response_body = JSON.parse(response.body, symbolize_names: true)
     merchant = response_body[:data]
-    # binding.pry
     expect(merchant.class).to eq(Hash)
-    expect(Merchant.all.count).to eq(3)
 
     expect(merchant).to have_key(:id)
     expect(merchant[:id]).to be_an(String)
@@ -44,23 +42,69 @@ RSpec.describe 'Merchants API' do
     expect(merchant).to have_key(:attributes)
     expect(merchant[:attributes][:name]).to be_an(String)
 
+  end
+
+  it 'returns a single merchant - sad path' do
+    id = create(:merchant).id
+    create_list(:merchant, 2)
+    get "/api/v1/merchants/#{id}"
+
+    expect(response).to be_successful
+
+    response_body = JSON.parse(response.body, symbolize_names: true)
+    merchant = response_body[:data]
+    expect(Merchant.all.count).to eq(3)
+
     expect(merchant[:attributes][:name]).to_not eq(Merchant.second.name)
     expect(merchant[:attributes][:name]).to_not eq(Merchant.last.name)
-    # get '/api/v1/merchants'
   end
 
   it 'returns a merchants items' do
-    # id = create(:merchant).id
-    # create_list(:item, 4, merchant_id: id)
-
     id = create(:merchant).id
-    items = create_list(:item, 3, merchant_id: id)
-    # binding.pry
+    create_list(:item, 3, merchant_id: id)
+
+
     get "/api/v1/merchants/#{id}/items"
 
     expect(response).to be_successful
 
+    response_body = JSON.parse(response.body, symbolize_names: true)
+    items = response_body[:data]
 
+    # binding.pry
+    items.each do |item|
+      expect(item).to have_key(:id)
+      expect(item[:id]).to be_an(String)
+
+      expect(item).to have_key(:attributes)
+      expect(item[:attributes][:name]).to be_a(String)
+
+      expect(item).to have_key(:attributes)
+      expect(item[:attributes][:description]).to be_a(String)
+
+      expect(item).to have_key(:attributes)
+      expect(item[:attributes][:unit_price]).to be_a(Float)
+    end
+  end
+
+  it 'returns a merchants items - sad path' do
+    id = create(:merchant).id
+    create_list(:item, 3, merchant_id: id)
+
+    id_2 = create(:merchant).id
+    other_item = create_list(:item, 1, merchant_id: id_2)
+
+
+    get "/api/v1/merchants/#{id}/items"
+
+    expect(response).to be_successful
+
+    response_body = JSON.parse(response.body, symbolize_names: true)
+    items = response_body[:data]
+
+    items.each do |item|
+      expect(item[:attributes][:name]).to_not eq(other_item.first.name)
+    end
 
   end
 
