@@ -76,7 +76,6 @@ RSpec.describe 'Items API' do
       merchant_id: id
 
       }
-      #why were we able to create items with no merchants in above tests
 
      post '/api/v1/items', params: { item: item_params }, as: :json
      expect(response).to be_successful
@@ -169,6 +168,62 @@ RSpec.describe 'Items API' do
 
     expect(items.first[:attributes][:name]).to eq("Sunscreen")
 
+  end
+
+  it 'can find all matching items - sad path' do
+
+    item1 = create(:item, name: "Sunscreen")
+    item2 = create(:item, name: "Better Sunscreen")
+    item3 = create(:item, name: "Octopus Squishy")
+
+    get "/api/v1/items/find_all?name=alphabet"
+
+    expect(response).to be_successful
+
+    response_body = JSON.parse(response.body, symbolize_names: true)
+    items = response_body[:data]
+    expect(items.class).to eq(Array)
+
+    expect(items).to eq([])
+
+  end
+
+  it 'can find all matching items - sad path (empty search)' do
+
+    item1 = create(:item, name: "Sunscreen")
+    item2 = create(:item, name: "Better Sunscreen")
+    item3 = create(:item, name: "Octopus Squishy")
+
+    get "/api/v1/items/find_all?name="
+
+    expect(response).to be_successful
+
+    response_body = JSON.parse(response.body, symbolize_names: true)
+    items = response_body[:data]
+    # binding.pry
+    expect(items.class).to eq(Hash)
+
+
+    expect(items[:errors]).to eq("Search cannot be blank.")
+
+  end
+
+  it 'deletes the invoices first before deleting items' do
+    item1 = create(:item, name: "Sunscreen")
+    invoice1 = Invoice.create!
+    invoice_item = InvoiceItem.create!(item_id: "#{item1.id}", invoice_id: "#{invoice1.id}")
+    # binding.pry
+
+    expect(Invoice.all.count).to eq(1)
+    expect(Item.all.count).to eq(1)
+    expect(InvoiceItem.all.count).to eq(1)
+    
+    delete "/api/v1/items/#{item1.id}"
+    expect(response).to be_successful
+
+    expect(Item.all.count).to eq(0)
+    expect(Invoice.all.count).to eq(0)
+    expect(InvoiceItem.all.count).to eq(0)
   end
 
 end
