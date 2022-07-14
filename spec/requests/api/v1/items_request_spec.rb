@@ -55,6 +55,15 @@ RSpec.describe 'Items API' do
   it 'returns a single item - sad path' do
     id = create(:item).id
     create_list(:item, 2)
+    get "/api/v1/items/99999999"
+
+    expect(response).to_not be_successful
+
+  end
+
+  it 'returns a single item - edge case' do
+    id = create(:item).id
+    create_list(:item, 2)
     get "/api/v1/items/#{id}"
 
     expect(response).to be_successful
@@ -217,7 +226,7 @@ RSpec.describe 'Items API' do
     expect(Invoice.all.count).to eq(1)
     expect(Item.all.count).to eq(1)
     expect(InvoiceItem.all.count).to eq(1)
-    
+
     delete "/api/v1/items/#{item1.id}"
     expect(response).to be_successful
 

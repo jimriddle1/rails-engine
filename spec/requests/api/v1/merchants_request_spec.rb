@@ -47,6 +47,15 @@ RSpec.describe 'Merchants API' do
   it 'returns a single merchant - sad path' do
     id = create(:merchant).id
     create_list(:merchant, 2)
+    get "/api/v1/merchants/99999999"
+
+    expect(response).to_not be_successful
+
+  end
+
+  it 'returns a single merchant - edge case' do
+    id = create(:merchant).id
+    create_list(:merchant, 2)
     get "/api/v1/merchants/#{id}"
 
     expect(response).to be_successful
