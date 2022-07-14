@@ -108,4 +108,60 @@ RSpec.describe 'Merchants API' do
 
   end
 
+  it 'returns a single merchant given a search param' do
+    merchant1 = create(:merchant, name: "Jim")
+    merchant2 = create(:merchant, name: "Jam Board")
+    merchant3 = create(:merchant, name: "NickT")
+    # create_list(:merchant, 2)
+
+    get "/api/v1/merchants/find?name=J"
+
+    expect(response).to be_successful
+
+    response_body = JSON.parse(response.body, symbolize_names: true)
+    merchant = response_body[:data]
+    expect(merchant.class).to eq(Hash)
+
+    expect(merchant).to have_key(:id)
+    expect(merchant[:id]).to be_an(String)
+
+    expect(merchant).to have_key(:attributes)
+    expect(merchant[:attributes][:name]).to be_an(String)
+
+    expect(merchant[:attributes][:name]).to eq("Jim")
+
+  end
+
+  it 'returns a single merchant given a search param - sad path' do
+    merchant1 = create(:merchant, name: "Jim")
+    merchant2 = create(:merchant, name: "Jam Board")
+    merchant3 = create(:merchant, name: "NickT")
+
+    get "/api/v1/merchants/find?name="
+
+    expect(response).to be_successful
+
+    response_body = JSON.parse(response.body, symbolize_names: true)
+
+    expect(response_body[:data][:errors]).to eq("Search cannot be blank.")
+
+
+  end
+
+  it 'returns a single merchant given a search param - sad path #2' do
+    merchant1 = create(:merchant, name: "Jim")
+    merchant2 = create(:merchant, name: "Jam Board")
+    merchant3 = create(:merchant, name: "NickT")
+
+    get "/api/v1/merchants/find?name=alphabet"
+
+    expect(response).to be_successful
+
+    response_body = JSON.parse(response.body, symbolize_names: true)
+
+    expect(response_body[:data][:errors]).to eq('No merchant with this search was found.')
+
+
+  end
+
 end
