@@ -5,15 +5,23 @@ class Api::V1::ItemsController < ApplicationController
   end
 
   def show
-    render json: ItemSerializer.new(Item.find(params[:id]))
+    if params[:id].to_i == 0
+      render status: 404
+    elsif Item.where("id = #{params[:id]}").count == 0
+      render status: 404
+    else
+      render json: ItemSerializer.new(Item.find(params[:id]))
+    end
   end
 
   def create
-    # binding.pry
     render json: ItemSerializer.new(Item.create(item_params)), status: :created
   end
 
   def destroy
+    item = Item.find(params[:id])
+    item.delete_item_invoices
+
     render json: Item.delete(params[:id])
   end
 
