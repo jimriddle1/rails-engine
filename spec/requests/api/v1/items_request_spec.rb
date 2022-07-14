@@ -61,6 +61,15 @@ RSpec.describe 'Items API' do
 
   end
 
+  it 'returns a single item - sad path' do
+    id = create(:item).id
+    create_list(:item, 2)
+    get "/api/v1/items/string-instead-of-integer"
+
+    expect(response).to_not be_successful
+
+  end
+
   it 'returns a single item - edge case' do
     id = create(:item).id
     create_list(:item, 2)
