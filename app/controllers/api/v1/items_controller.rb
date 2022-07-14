@@ -5,7 +5,9 @@ class Api::V1::ItemsController < ApplicationController
   end
 
   def show
-    if Item.where("id = #{params[:id]}").count == 0
+    if params[:id].to_i == 0
+      render status: 404
+    elsif Item.where("id = #{params[:id]}").count == 0
       render status: 404
     else
       render json: ItemSerializer.new(Item.find(params[:id]))

@@ -5,8 +5,9 @@ class Api::V1::MerchantsController < ApplicationController
   end
 
   def show
-    # binding.pry
-    if Merchant.where("id = #{params[:id]}").count == 0
+    if params[:id].to_i == 0
+      render status: 404
+    elsif Merchant.where("id = #{params[:id]}").count == 0
       render status: 404
     else
       render json: MerchantSerializer.new(Merchant.find(params[:id]))
@@ -14,3 +15,9 @@ class Api::V1::MerchantsController < ApplicationController
   end
 
 end
+
+
+
+# def show
+#   render json: MerchantSerializer.new(Merchant.find(params[:id]))
+# end
