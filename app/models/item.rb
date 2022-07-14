@@ -6,7 +6,7 @@ class Item < ApplicationRecord
   belongs_to :merchant
   has_many :invoice_items, dependent: :destroy
   has_many :invoices, through: :invoice_items
-  
+
   def delete_item_invoices
     if invoices.count > 0
       invoices.map do |invoice|
